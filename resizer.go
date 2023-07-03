@@ -45,25 +45,18 @@ func resizer(buf []byte, o Options) ([]byte, error) {
 	}
 
 	// Auto rotate image based on EXIF orientation header
-	// image, rotated, err := rotateAndFlipImage(image, o)
-	// if err != nil {
-	// 	return nil, err
-	// }
+	image, rotated, err := rotateAndFlipImage(image, o)
+	if err != nil {
+		return nil, err
+	}
 
-	if (imageType == JPEG || imageType == HEIF || imageType == AVIF) && !o.NoAutoRotate {
-		image, err = vipsAutoRotate(image)
+	// If JPEG or HEIF image, retrieve the buffer
+	if rotated && (imageType == JPEG || imageType == HEIF || imageType == AVIF) && !o.NoAutoRotate {
+		buf, err = getImageBuffer(image)
 		if err != nil {
 			return nil, err
 		}
 	}
-
-	// If JPEG or HEIF image, retrieve the buffer
-	// if rotated && (imageType == JPEG || imageType == HEIF || imageType == AVIF) && !o.NoAutoRotate {
-	// 	buf, err = getImageBuffer(image)
-	// 	if err != nil {
-	// 		return nil, err
-	// 	}
-	// }
 
 	inWidth := int(image.Xsize)
 	inHeight := int(image.Ysize)
